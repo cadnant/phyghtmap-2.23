@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.23"
+__version__ = "2.24-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -332,7 +332,7 @@ def getSRTMv3Areas(polygons):
 		if nOccurrences % 2 == 1 and not area in areas:
 			areas.append(area)
 	return sorted(areas)
-	
+
 def makeNasaHgtIndex(resolution, srtmVersion):
 	"""generates an index file for the NASA SRTM server.
 	"""
@@ -809,4 +809,3 @@ def getFiles(area, polygon, corrx, corry, sources):
 			print("{0:s}: no file found on server.".format(area))
 			continue
 	return files
-

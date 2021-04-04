@@ -4,7 +4,7 @@
 from __future__ import print_function
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.23"
+__version__ = "2.24-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -237,6 +237,14 @@ def parseCommandLine():
 		action="store", dest="voidMax")
 	parser.add_option("-v", "--version", help="print version and exit.",
 		dest="version", action="store_true", default=False)
+	parser.add_option("--scale", help="pass a number to scale the image"
+		"\ndata.  The default value is 1  for no scaling.",
+		metavar="SCALING", dest="mapScale", action="store", default=1,
+		type="int")
+	parser.add_option("--smooth", help="Map smoothing parameter to "
+		"\nuse for the output.  The default value is 0.",
+		metavar="SMOOTH", dest="mapSmooth", action="store", default=0.0,
+		type="float")
 	opts, args = parser.parse_args()
 	if opts.version:
 		print("phyghtmap {0:s}".format(__version__))
@@ -416,7 +424,8 @@ def processHgtFile(srcName, opts, output=None, wayOutput=None, statsOutput=None,
 					stepCont=int(opts.contourStepSize),
 					maxNodesPerWay=opts.maxNodesPerWay, noZero=opts.noZero,
 					rdpEpsilon=opts.rdpEpsilon,
-					rdpMaxVertexDistance=opts.rdpMaxVertexDistance)
+					rdpMaxVertexDistance=opts.rdpMaxVertexDistance,
+					scale=opts.mapScale, smooth=opts.mapSmooth)
 				goodTiles.append(tile)
 			except ValueError: # tiles with the same value on every element
 				continue
@@ -466,7 +475,8 @@ def processHgtFile(srcName, opts, output=None, wayOutput=None, statsOutput=None,
 						stepCont=int(opts.contourStepSize),
 						maxNodesPerWay=opts.maxNodesPerWay, noZero=opts.noZero,
 						rdpEpsilon=opts.rdpEpsilon,
-						rdpMaxVertexDistance=opts.rdpMaxVertexDistance)
+						rdpMaxVertexDistance=opts.rdpMaxVertexDistance,
+						scale=opts.mapScale, smooth=opts.mapSmooth)
 				except ValueError: # tiles with the same value on every element
 					continue
 				opts.startId, ways = writeNodes(output, contourData,
@@ -481,7 +491,8 @@ def processHgtFile(srcName, opts, output=None, wayOutput=None, statsOutput=None,
 						stepCont=int(opts.contourStepSize),
 						maxNodesPerWay=opts.maxNodesPerWay, noZero=opts.noZero,
 						rdpEpsilon=opts.rdpEpsilon,
-						rdpMaxVertexDistance=opts.rdpMaxVertexDistance)
+						rdpMaxVertexDistance=opts.rdpMaxVertexDistance,
+						scale=opts.mapScale, smooth=opts.mapSmooth)
 				except ValueError: # tiles with the same value on every element
 					continue
 				# we have multiple output files, so we need to count nodeIds here

@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.23"
+__version__ = "2.24-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -77,4 +77,3 @@ class Config(object):
 		else:
 			self.set(section, key, value)
 			return value
-

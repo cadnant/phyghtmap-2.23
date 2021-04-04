@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.23"
+__version__ = "2.24-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -44,7 +44,7 @@ class Output(object):
 		self.stringTable = StringTable()
 		self.writeTimestamp = writeTimestamp
 		self.timestamp = int(time.mktime(time.localtime()))
-		self.timestampString = "" # dummy attribute, needed by main.py 
+		self.timestampString = "" # dummy attribute, needed by main.py
 		self.writeHeader(osmVersion, phyghtmapVersion)
 
 	def makeStringPair(self, a, b=None):
@@ -209,7 +209,7 @@ class Output(object):
 		# ele = <elevation>
 		eleTag = self.makeStringPair("ele", str(elevation))
 		contourTag = self.makeStringPair("contour", "elevation")
-		elevClassifierTag = self.makeStringPair("contour_ext", 
+		elevClassifierTag = self.makeStringPair("contour_ext",
 			self.elevClassifier(elevation))
 		data.append(self.stringTable.stringOrIndex(eleTag))
 		data.append(self.stringTable.stringOrIndex(contourTag))
@@ -307,4 +307,3 @@ def writeNodes(output, contourData, elevations, timestampString, # dummy option
 		output.write(str((startId, nodes))+"\n")
 		output.flush()
 	return newId, ways
-

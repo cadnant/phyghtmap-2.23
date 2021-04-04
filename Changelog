@@ -1,3 +1,10 @@
+phyghtmap (2.24) stable; urgency=low
+
+  * Added interpolation and smoothing options to give nicer looking contourSet
+    at larger map scales.
+
+  -- David Dixon 4 Apr 2021
+
 phyghtmap (2.23) stable; urgency=low
 
   * Fixed a bug occurring when using RDP contour line simplification together
@@ -80,7 +87,7 @@ phyghtmap (1.72) stable; urgency=low
     to generate single output files.  This is done by evaluating the child
     processes' results in the order the child processes were started.  This change
     may cause a slight performance drop in this (parallel/single output) mode.
-  * Fixed issue with possible one-node paths. 
+  * Fixed issue with possible one-node paths.
 
  -- Adrian Dempwolff <adrian.dempwolff@urz.uni-heidelberg.de>  Wed, 29 Jul 2015 14:15:00 +0200
 
@@ -203,7 +210,7 @@ phyghtmap (1.43) stable; urgency=low
     - Added the --source option which allows specification of data source
       selection preference lists.  This option may be used instead of the
       --viewfinder-mask and --srtm options.
-    - Fixed a typo in NASASRTMUtil.py. 
+    - Fixed a typo in NASASRTMUtil.py.
     - Added code to remove duplicate nodes in paths created using
       matplotlib.cntr.Cntr's trace method.
   * Fixed bug in hgt.hgtTile's getElevRange method.  In cases where the min/max
@@ -317,7 +324,7 @@ phyghtmap (1.21) stable; urgency=low
   * Output node ids are now continuous; no id is given twice per run of
     phyghtmap
   * Fixed bug in NASASRTMUtil.getFiles():  Cached viewfinder files were not
-    correctly identified when the --srtm and --viefinder-mask options differed 
+    correctly identified when the --srtm and --viefinder-mask options differed
 
  -- Adrian Dempwolff <dempwolff@informatik.uni-heidelberg.de>  Mon, 28 Mar 2011 13:18:00 +0200
 
@@ -363,4 +370,3 @@ phyghtmap (0.99pre1) unstable; urgency=low
   * Initial release.
 
  -- Adrian Dempwolff <dempwolff@informatik.uni-heidelberg.de>  Sat, 26 Dec 2009 19:30:00 +0100
-

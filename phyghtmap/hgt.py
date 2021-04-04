@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.23"
+__version__ = "2.24-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -20,6 +20,7 @@ import numpy
 
 from phyghtmap.varint import bboxStringtypes
 
+from scipy import interpolate
 
 meters2Feet = 1.0/0.3048
 
@@ -108,7 +109,7 @@ def parseHgtFilename(filename, corrx, corry):
 	latSwitch = filename[0:1].upper()
 	latValue  = filename[1:3]
 	lonSwitch = filename[3:4].upper()
-	lonValue  = filename[4:7]		
+	lonValue  = filename[4:7]
 	if latSwitch == 'N' and latValue.isdigit():
 		minLat = int(latValue)
 	elif latSwitch == 'S' and latValue.isdigit():
@@ -750,7 +751,7 @@ class hgtFile:
 					#print("depth: {:d}".format(depth))
 					#if depth>20:
 						#os._exit(11)
-					
+
 		tiles = []
 		bbox, truncatedData = truncateData(area, self.zData)
 		chopData(bbox, truncatedData)
@@ -808,7 +809,8 @@ class hgtTile:
 			return self.minLon, self.minLat, self.maxLon, self.maxLat
 
 	def contourLines(self, stepCont=20, maxNodesPerWay=0, noZero=False,
-		minCont=None, maxCont=None, rdpEpsilon=None, rdpMaxVertexDistance=None):
+		minCont=None, maxCont=None, rdpEpsilon=None, rdpMaxVertexDistance=None,
+		scale=1, smooth=0):
 		"""generates contour lines using matplotlib.
 
 		<stepCont> is height difference of contiguous contour lines in meters
@@ -841,15 +843,32 @@ class hgtTile:
 		# z data is a masked array filled with nan.
 		z = numpy.ma.array(self.zData, mask=self.mask, fill_value=float("NaN"),
 			keep_mask=True)
+
+		#Get smoother contours by a) interpolating SRTM data (with scale factor scale),
+		# Then smooth the data using a Gaussian filter.
+		#scale=4
+		x2 = numpy.linspace(self.xData[0], self.xData[-1], len(self.xData) * scale)
+		y2 = numpy.linspace(self.yData[0], self.yData[-1], len(self.yData) * scale)
+		xnew, ynew = numpy.meshgrid(x2, y2)
+		#znew = f(xnew, ynew)
+		import scipy.ndimage
+		from scipy.ndimage.filters import gaussian_filter
+		sm = int(smooth*scale)
+		#znew = scipy.ndimage.grey_dilation(scipy.ndimage.grey_erosion(scipy.ndimage.zoom(z, scale),size=(sm,sm)), size=(sm,sm))
+		#sigma = 4.0 # this depends on how noisy your data is, play with it!
+		#znew = gaussian_filter(znew, sigma)
+		znew = gaussian_filter(scipy.ndimage.zoom(z, scale), sm)
+
 		if mplversion < "2.0.0":
-			Contours = ContourObject(_cntr.Cntr(x, y, z.filled(), None),
+			Contours = ContourObject(_cntr.Cntr(xnew, ynew, znew, None),
 				maxNodesPerWay, self.transform, self.polygon,
 				rdpEpsilon, rdpMaxVertexDistance)
 		else:
 			corner_mask = True
 			nchunk = 0
 			Contours = ContourObject(
-				_contour.QuadContourGenerator(x, y, z.filled(), self.mask, corner_mask, nchunk),
+				_contour.QuadContourGenerator(xnew, ynew, znew, self.mask, corner_mask, nchunk),
+				#_contour.QuadContourGenerator(x, y, z.filled(), self.mask, corner_mask, nchunk),
 				maxNodesPerWay, self.transform, self.polygon,
 				rdpEpsilon, rdpMaxVertexDistance)
 		return levels, Contours
@@ -890,4 +909,3 @@ class hgtTile:
 			for lonIndex, height in enumerate(row):
 				lon = self.minLon + lonIndex*self.lonIncrement
 				plotFile.write("{0:.7f} {1:.7f} {2:d}\n".format(lon, lat, height))
-

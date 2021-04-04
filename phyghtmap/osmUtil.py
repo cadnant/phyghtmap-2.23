@@ -1,5 +1,5 @@
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.23"
+__version__ = "2.24-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -78,7 +78,7 @@ class Output(object):
 			'<osm version="{0:s}" generator="phyghtmap {1:s}">\n'.format(
 			self.osmVersion, self.phyghtmapVersion))
 		self.write(self.boundsTag+"\n")
-	
+
 	def done(self):
 		self.write("</osm>\n")
 		self.outF.close()
@@ -114,7 +114,7 @@ def _makePoints(output, path, IDCounter, versionString, timestampString):
 	"""writes OSM representations of the points making up a path to
 	output.
 
-	It returns a list of the node ids included in this path. 
+	It returns a list of the node ids included in this path.
 	"""
 	ids, content = [], []
 	for lon, lat in path:
