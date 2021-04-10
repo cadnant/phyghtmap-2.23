@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.24-DPD"
+__version__ = "2.25-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -908,4 +908,4 @@ class hgtTile:
 			lat = self.maxLat - latIndex*self.latIncrement
 			for lonIndex, height in enumerate(row):
 				lon = self.minLon + lonIndex*self.lonIncrement
-				plotFile.write("{0:.7f} {1:.7f} {2:d}\n".format(lon, lat, height))
+				plotFile.write("{0:.7f} {1:.7f} {2:.2f}\n".format(lon, lat, height))

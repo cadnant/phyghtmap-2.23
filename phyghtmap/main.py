@@ -4,7 +4,7 @@
 from __future__ import print_function
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.24-DPD"
+__version__ = "2.25-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -199,7 +199,7 @@ def parseCommandLine():
 		dest="viewfinder")
 	parser.add_option("--source", "--data-source", help="specify a list of"
 		"\nsources to use as comma-seperated string.  Available sources are"
-		"\n'srtm1', 'srtm3', 'view1' and 'view3'.  If specified, the data source"
+		"\n'srtm1', 'srtm3', 'view1', 'view3' and 'cope1'.  If specified, the data source"
 		"\nwill be selected using this option as preference list.  Specifying"
 		"\n--source=view3,srtm3 for example will prefer viewfinder 3 arc second"
 		"\ndata to NASA SRTM 3 arc second data.  Also see the --srtm-version"
@@ -284,7 +284,7 @@ def parseCommandLine():
 		opts.dataSource = [el.strip() for el in
 			opts.dataSource.lower().split(",")]
 		for s in opts.dataSource:
-			if not s[:5] in ["view1", "view3", "srtm1", "srtm3"]:
+			if not s[:5] in ["view1", "view3", "srtm1", "srtm3", "cope1"]:
 				print("Unknown data source: {0:s}".format(s))
 				sys.exit(1)
 			elif s in ["srtm1", "srtm3"]:
@@ -351,7 +351,7 @@ def makeOsmFilename(borders, opts, srcNames):
 	srcNameMiddles = [os.path.split(os.path.split(srcName)[0])[1].lower() for srcName in
 		srcNames]
 	for srcNameMiddle in set(srcNameMiddles):
-		if srcNameMiddle.lower()[:5] in ["srtm1", "srtm3", "view1", "view3"]:
+		if srcNameMiddle.lower()[:5] in ["srtm1", "srtm3", "view1", "view3", "cope1"]:
 			continue
 		elif not opts.dataSource:
 			# files from the command line, this could be something custom

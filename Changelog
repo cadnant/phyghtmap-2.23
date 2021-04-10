@@ -1,4 +1,11 @@
-phyghtmap (2.24) stable; urgency=low
+phyghtmap (2.25-DPD) stable; urgency=low
+
+  * First-pass for addition of "Copernicus" option, giving access to ESA's GLO-30
+    DEM.  Source is "cope1".  Index currently needs to be built manually.
+
+  -- David Dixon 10 Apr 2021
+
+phyghtmap (2.24-DPD) stable; urgency=low
 
   * Added interpolation and smoothing options to give nicer looking contourSet
     at larger map scales.

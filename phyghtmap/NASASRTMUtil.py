@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.24-DPD"
+__version__ = "2.25-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
@@ -47,6 +47,11 @@ class NASASRTMUtilConfigClass(object):
 		############################################################
 		self.VIEWfileDictPageRe = "http://www.viewfinderpanoramas.org/Coverage%20map%20viewfinderpanoramas_org{0:d}.htm"
 		self.VIEWhgtSaveSubDirRe = "VIEW{0:d}"
+		############################################################
+		### Copernicus specific variables ##########################
+		############################################################
+		self.COPEfileDictPageRe = "https://copernicus-dem-30m.s3.amazonaws.com/tileList.txt"
+		self.COPEhgtSaveSubDirRe = "COPE{0:d}"
 
 	def getSRTMFileServer(self, resolution, srtmVersion):
 		if srtmVersion == 2.1:
@@ -80,6 +85,8 @@ class NASASRTMUtilConfigClass(object):
 			"hgtIndex_{0:d}_v{1:.1f}.txt")
 		self.VIEWhgtIndexFileRe = os.path.join(self.hgtSaveDir,
 			"viewfinderHgtIndex_{0:d}.txt")
+		self.COPEhgtIndexFileRe = os.path.join(self.hgtSaveDir,
+			"copeHgtIndex_{0:d}.txt")
 
 	def earthexplorerCredentials(self, user, password):
 		self.earthexplorerUser = user
@@ -401,6 +408,10 @@ def writeViewIndex(resolution, zipFileDict):
 	index.close()
 	print("DONE")
 
+def makeCoperIndex():
+
+	return
+
 def makeViewHgtIndex(resolution):
 	"""generates an index file for the viewfinder hgt files.
 	"""
@@ -481,6 +492,8 @@ def makeIndex(indexType):
 		makeViewHgtIndex(1)
 	elif indexType == "view3":
 		makeViewHgtIndex(3)
+	elif indexType == "cope1":
+		makeCoperIndex()
 
 desiredIndexVersion = {
 	"srtm1v2.1": 1,
@@ -566,6 +579,25 @@ def getViewUrl(area, resolution):
 			return url
 	return None
 
+def getCopeUrl(area, resolution=1):
+	"""determines the Copernicus download url for a given area.
+	"""
+	#hgtIndexFile = NASASRTMUtilConfig.COPEhgtIndexFileRe.format(resolution)
+	#try:
+	#	os.stat(hgtIndexFile)
+	#except:
+	#	makeViewHgtIndex(resolution)
+	#index = getIndex(hgtIndexFile, "cope{0:d}".format(resolution))
+	server = "https://copernicus-dem-30m.s3.amazonaws.com/"
+	areaName = "Copernicus_DSM_COG_10_" + area[0:3] + "_00_" + area[3:7] + "_00_DEM"
+	areaFile = areaName + ".tif"
+	#for line in index:
+	#	if line == areaName:
+	#		url = areaName+"/" + areaFile
+	#		return url
+	#return None
+	return server + areaName + "/" + areaFile
+
 def unzipFile(saveZipFilename, area):
 	"""unzip a zip file.
 	"""
@@ -616,6 +648,9 @@ def getDirNames(source):
 	elif source.startswith("view"):
 		hgtSaveSubDir = os.path.join(NASASRTMUtilConfig.hgtSaveDir,
 			NASASRTMUtilConfig.VIEWhgtSaveSubDirRe.format(resolution))
+	elif source.startswith("cope"):
+		hgtSaveSubDir = os.path.join(NASASRTMUtilConfig.hgtSaveDir,
+			NASASRTMUtilConfig.COPEhgtSaveSubDirRe.format(resolution))
 	return NASASRTMUtilConfig.hgtSaveDir, hgtSaveSubDir
 
 def initDirs(sources):
@@ -651,6 +686,10 @@ def initDirs(sources):
 			VIEWhgtSaveSubDir = os.path.join(NASASRTMUtilConfig.hgtSaveDir,
 				NASASRTMUtilConfig.VIEWhgtSaveSubDirRe.format(sourceResolution))
 			mkdir(VIEWhgtSaveSubDir)
+		elif sourceType == "cope":
+			COPEhgtSaveSubDir = os.path.join(NASASRTMUtilConfig.hgtSaveDir,
+				NASASRTMUtilConfig.COPEhgtSaveSubDirRe.format(sourceResolution))
+			mkdir(COPEhgtSaveSubDir)
 
 def base64String(string):
 	return base64.encodestring(string.encode()).decode()
@@ -700,6 +739,8 @@ def downloadToFile(url, filename, source):
 def downloadAndUnzip(url, area, source):
 	if source.lower().startswith("srtm") and "v3.0" in source.lower():
 		return downloadAndUnzip_Tif(url, area, source)
+	#elif source.startswith("cope"):
+	#	return downloadToFileTif(url, area, source)
 	else:
 		return downloadAndUnzip_Zip(url, area, source)
 
@@ -728,6 +769,9 @@ def downloadAndUnzip_Tif(url, area, source):
 		return None
 
 def downloadAndUnzip_Zip(url, area, source):
+	print(url)
+	print(source)
+	print(area)
 	hgtSaveDir, hgtSaveSubDir = getDirNames(source)
 	fileResolution = int(source[4])
 	saveZipFilename = os.path.join(hgtSaveSubDir, url.split("/")[-1])
@@ -743,6 +787,8 @@ def downloadAndUnzip_Zip(url, area, source):
 	except:
 		try:
 			os.stat(saveZipFilename)
+			if source.startswith("cope"):
+				return saveZipFilename
 			areaNames = unzipFile(saveZipFilename, area)
 			if source.startswith("view"):
 				updateViewIndex(fileResolution, url, areaNames)
@@ -755,6 +801,8 @@ def downloadAndUnzip_Zip(url, area, source):
 		except:
 			print("{0:s}: downloading file {1:s} to {2:s} ...".format(area, url, saveZipFilename))
 			downloadToFile(url, saveZipFilename, source)
+			if source.startswith("cope"):
+				return saveZipFilename
 			try:
 				areaNames = unzipFile(saveZipFilename, area)
 				if source.startswith("view"):
@@ -788,12 +836,18 @@ def getFile(area, source):
 		url = getNASAUrl(area, fileResolution, srtmVersion)
 	elif source.startswith("view"):
 		url = getViewUrl(area, fileResolution)
+	elif source.startswith("cope"):
+		url = getCopeUrl(area, fileResolution)
 	if not url:
 		return None
 	else:
 		return downloadAndUnzip(url, area, source)
 
 def getFiles(area, polygon, corrx, corry, sources):
+	"""
+	Main routine
+	Fills main hgtDataFiles array with list of files from "files"
+	"""
 	initDirs(sources)
 	bbox = calcBbox(area, corrx, corry)
 	areaPrefixes = makeFileNamePrefixes(bbox, polygon, corrx, corry)

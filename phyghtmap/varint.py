@@ -1,5 +1,5 @@
 __author__ = "Adrian Dempwolff (phyghtmap@aldw.de)"
-__version__ = "2.24-DPD"
+__version__ = "2.25-DPD"
 __copyright__ = "Copyright (c) 2009-2021 Adrian Dempwolff"
 __license__ = "GPLv2+"
 
